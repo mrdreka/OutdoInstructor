@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         // Displaying the user details on the screen
 
         txtName.setText(name);
-        //txtEmail.setText(email);
+
 
     }
 
@@ -122,7 +122,8 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.locate) {
         //    Intent intent = new Intent(this, SignUp.class);
       //      startActivity(intent);
-
+            Intent intent = new Intent(this, MapsActivity.class);
+                  startActivity(intent);
             Log.d("1", "test");
         } else if (id == R.id.lift) {
 

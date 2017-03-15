@@ -1,9 +1,12 @@
 package it.speciale.outdoinstructor;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity
     private SQLiteHandler db;
     private SessionManager session;
     private TextView txtName,txtEmail;
+    private static String TAG_MAPS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +82,9 @@ public class MainActivity extends AppCompatActivity
 
         txtName.setText(name);
 
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                1);
 
     }
 
@@ -122,8 +129,12 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.locate) {
         //    Intent intent = new Intent(this, SignUp.class);
       //      startActivity(intent);
-            Intent intent = new Intent(this, MapsActivity.class);
-                  startActivity(intent);
+         //   MapViewFragment fragmentS1 = new MapViewFragment();
+       //     getSupportFragmentManager().beginTransaction().replace(R.id.content_main, fragmentS1).commit();
+
+
+           Intent intent = new Intent(this, MapsActivity.class);
+                 startActivity(intent);
             Log.d("1", "test");
         } else if (id == R.id.lift) {
 

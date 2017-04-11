@@ -2,6 +2,10 @@ package it.speciale.outdoinstructor;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -17,16 +21,24 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import static android.R.id.message;
 
-public class MapsActivity extends FragmentActivity  implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity  implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private int permissionCheck;
+    Marker Person1, Person2 ;
+
+    Polyline lif1,lift2,line,toLars1,toLars2,toLars3,toLars4,toLars5 ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +53,7 @@ public class MapsActivity extends FragmentActivity  implements OnMapReadyCallbac
 
 
         Log.d(getClass().getName(), "value = " + permissionCheck);
+
 
     }
 
@@ -70,11 +83,34 @@ public class MapsActivity extends FragmentActivity  implements OnMapReadyCallbac
             // permissions this app might request
         }
     }
+/*
+    public void checkBounds() {
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition position) {
+                LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+                fetchData(bounds);
+            }
+        });
+
+    } */
+
+    @Override
+    public void onCameraIdle() {
+
+        Log.v("test", ""+ mMap.getCameraPosition());
 
 
+    }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.setOnCameraIdleListener(this);
+
+      //  mMap .getUiSettings().setScrollGesturesEnabled(false);
+
+        mMap.setMinZoomPreference((float) 14);
 
         permissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -88,17 +124,78 @@ public class MapsActivity extends FragmentActivity  implements OnMapReadyCallbac
             Toast.makeText(this, "Permission denied to access your location", Toast.LENGTH_SHORT).show();
         }
         // For dropping a marker at a point on the Map
-        LatLng ZellAmZee = new LatLng(47.326189, 12.771912);
-        mMap.addMarker(new MarkerOptions().position(ZellAmZee).title("Zell Am Zee").snippet("Marker Description"));
+        LatLng ZellAmZee = new LatLng(47.208865, 12.689183);
+        mMap.addMarker(new MarkerOptions().position(ZellAmZee).title("Me").snippet("Skiing area"));
+
+        mMap.setOnMarkerClickListener(this);
+        // For dropping a marker at a point on the Map
+        LatLng Person1L = new LatLng(47.191345, 12.676994);
+        Person1 = mMap.addMarker(new MarkerOptions().position(Person1L).title("Morten").snippet("Skiing area")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.avatar_black)));
+
+        LatLng Person2L = new LatLng(47.219985, 12.699170);
+        Person2 = mMap.addMarker(new MarkerOptions().position(Person2L).title("Lars").snippet("Skiing area")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.avatar_2)));
+
+
 
         // For zooming automatically to the location of the marker
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(ZellAmZee).zoom(13).build();
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(ZellAmZee).zoom(14).bearing(189).tilt(38).build();
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
+        Log.v("test", ""+ mMap.getCameraPosition());
 
-        // Add a marker in Sydney and move the camera
-       // LatLng sydney = new LatLng(-34, 151);
-       // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-       // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+/*
+        CameraPosition oldPos = mMap.getCameraPosition();
+
+        CameraPosition pos = CameraPosition.builder(oldPos).bearing(90).build();
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
+*/
+
+
+/*
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+            @Override
+            public void onMapClick(LatLng arg0) {
+                // TODO Auto-generated method stub
+                Log.d("arg0", arg0.latitude + "-" + arg0.longitude);
+            }
+        });*/
+//        mMap.setLatLngBoundsForCameraTarget(northeast,southwest);
     }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        if (marker.equals(Person1))
+        {
+            lif1 = this.mMap.addPolyline(new PolylineOptions().add(new LatLng(47.208865, 12.689183),new LatLng(47.201324, 12.677970)).width(5).color(Color.GREEN));
+            line = this.mMap.addPolyline(new PolylineOptions().add(new LatLng(47.201324, 12.677970),new LatLng(47.201681, 12.680577)).width(6).color(Color.BLUE));
+            lift2 = this.mMap.addPolyline(new PolylineOptions().add(new LatLng(47.201681, 12.680577),new LatLng(47.191345, 12.676994)).width(5).color(Color.GREEN));
+
+
+            if(toLars1 != null) {
+                toLars1.remove();
+                toLars2.remove();
+                toLars3.remove();
+                toLars4.remove();
+            }
+        }
+        else if (marker.equals(Person2)){
+            if(lif1 != null) {
+                lif1.remove();
+                line.remove();
+                lift2.remove();
+            }
+
+            toLars1 = this.mMap.addPolyline(new PolylineOptions().add(new LatLng(47.208865, 12.689183),new LatLng(47.212990, 12.688757)).width(6).color(Color.BLUE));
+            toLars2 = this.mMap.addPolyline(new PolylineOptions().add(new LatLng(47.212990, 12.688757),new LatLng(47.215220, 12.692373)).width(6).color(Color.BLUE));
+            toLars3 =  this.mMap.addPolyline(new PolylineOptions().add(new LatLng(47.215220, 12.692373),new LatLng(47.219869, 12.696976)).width(6).color(Color.BLUE));
+            toLars4 =  this.mMap.addPolyline(new PolylineOptions().add(new LatLng(47.219869, 12.696976),new LatLng(47.219985, 12.699170)).width(6).color(Color.BLUE));
+
+        }
+        return false;
+    }
+
 }
